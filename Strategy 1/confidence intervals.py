@@ -119,7 +119,7 @@ for col in range(8):
             win_count1 = 0
             win_count2 = 0
             draw_count = 0
-            for i in range(10000): # play 50000 games in each estimate
+            for i in range(20000): # play 20000 games in each estimate
                 scores = [0,0] #initialize score when a new game starts
                 for j in range(10): # play 10 rounds in each game
                     deck = backup_deck.copy()
@@ -140,8 +140,8 @@ for col in range(8):
                     win_count2 += 1
                 else:
                     draw_count += 1
-            win_p1.append(win_count1/10000)
-            win_p2.append(win_count2/10000)
+            win_p1.append(win_count1/20000)
+            win_p2.append(win_count2/20000)
             draw_p.append(draw_count/10000)
         wining_p1[col][0] = max(win_p1) #write in maximum p
         wining_p1[col][1] = min(win_p1) #write in minimum p
