@@ -94,10 +94,11 @@ win_count2 = 0
 win_p1 = []
 win_p2 = []
 
-#store the maximum and minimumm probability for both players from each case
+#store the maximum and minimumm probability (confidence interval) for both players from 8 cases
 wining_p1 = np.zeros([8,2])
 wining_p2 = np.zeros([8,2])
 
+#go through 8 cases
 for col in range(8):
         # probability threshold for players
         p1 = 0.3 + col*0.1
