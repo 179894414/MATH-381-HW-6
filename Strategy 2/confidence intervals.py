@@ -111,7 +111,7 @@ for col in range(8):
         for estimate in range(10):
             win_count1 = 0
             win_count2 = 0
-            for i in range(20000): # play 10000 games in each estimate
+            for i in range(20000): # play 20000 games in each estimate
                 scores = [0,0] #initialize score when a new game starts
                 for j in range(10): # play 10 rounds in each game
                     deck = backup_deck.copy()
@@ -119,7 +119,7 @@ for col in range(8):
                     card = deck.pop(0) # turn over the first card
                     cardsUsed = []
                     if (j <= 4): #each player starts 5 rounds in one game
-                        result = play(players, 0, card, deck, cardsUsed, 0, False, 1)
+                        result = play(players, 0, card, deck, cardsUsed, 0, False, 1) # mode =1
                     else:
                         result = play(players, 1, card, deck, cardsUsed, 0, False, 1)
                     lose_player = result[0]
