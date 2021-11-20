@@ -106,7 +106,7 @@ drawing_p = np.zeros([8,2])
 #go through 8 cases: (0.3,0.3), (0.3,0.4), ..., (0.3,1.0)
 for col in range(8):
         # probability threshold for players
-        p1 = 0.3 # manually change the threshold for player 1, 0.3, 0.6, 0.9, 1
+        p1 = 1.0 # manually change the threshold for player 1, 0.3, 0.6, 0.9, 1
         p2 = 0.3 + col*0.1
         #Create a 2x2 matrix players: first column represents players; second column represents probability shresholds
         # 0 means player 1, 1 means player 2
