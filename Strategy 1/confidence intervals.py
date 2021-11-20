@@ -1,8 +1,10 @@
 import random as rand
 import numpy as np
 
-# Wrtie a recurssive function for playing each round.
-# 8 parameters:
+#The following code is used to generate confidence intervals for both players with different pairs of thresholds.
+
+#Wrtie a recurssive function for playing each round.
+#8 parameters:
 # players is 2*2 matrix containting players' id and their probability threshold:
 # the first column represents players; the second column represents probability threshold;
 # id is an integer, means the id of the player who is currently playing this turn: 0 means player 1, 1 means player 2;
@@ -13,7 +15,7 @@ import numpy as np
 # canGiveUp is a boolean character, represents if a play can choose skip this turn or not,
 # which means if they have at least one guess in this turn or not: true means they can choose to give up; false means they cannot give up
 # mode is an integer, represents if two players can remember the cards being turned over before:
-# 0 means cannot remember, thus the first type of strategies; 1 means can remember, second type of strategies.
+# 0 means they cannot remember, thus the first type of strategies; 1 means they can remember, second type of strategies.
 def play(players, id, card, deck, cardsUsed, count, canGiveUp, mode):
     if (mode == 1): # to see if we use the first or second type of strategies
         cardsUsed.append(card)
@@ -21,14 +23,7 @@ def play(players, id, card, deck, cardsUsed, count, canGiveUp, mode):
         return (0, 0)
     else:
         threshold = players[id][1]
-        if (mode == 1 & id == 0): #player 1 uses the second type of strategies
-            small = 0
-            for l in range(len(cardsUsed)):
-                if (cardsUsed[l] < card):
-                    small += 1
-            p_smaller = (card - 1 - small) / (60.0 - len(cardsUsed)) #the probability that the next card is smaller than the current card
-        else:
-            p_smaller = (card - 1) / 60.0
+        p_smaller = (card - 1) / 60.0 #the probability that the next card is smaller than the current card
         p_larger = 1 - p_smaller
         if ((p_smaller >= threshold) and (p_smaller > p_larger)): # if probability for smaller than >= threhold and p_smaller > p_larger
             new_card = deck.pop(0)
@@ -37,6 +32,7 @@ def play(players, id, card, deck, cardsUsed, count, canGiveUp, mode):
             if (new_card < card): # player guesses smaller than, and the new card is smaller than the current card
                 count += 1
                 card = deck.pop(0)
+                # player guesses right, so he starts again to chooose
                 return play(players, id, card, deck, cardsUsed, count, True, mode)
             else: # player guesses smaller than, but the new card is larger, so he loses, and return his id and count
                 return (id, count)
@@ -80,38 +76,43 @@ def play(players, id, card, deck, cardsUsed, count, canGiveUp, mode):
                         return (id, count)
 
 
-
 #Create a list for deck
 backup_deck = []
 for i in range (60): #store 60 cards fisrt, shuffle will be done in for loop
     backup_deck.append(i)
 
-#Store the number of wining for both players
+#Store the number of winings for both players and draws
 win_count1 = 0
 win_count2 = 0
+draw_count = 0
 
-#Store 10 estimates of wining probability for both players
+#Store 10 estimates of wining probability for both players and draw probability
 win_p1 = []
 win_p2 = []
+draw_p = []
 
-#store the maximum and minimumm probability for both players from each case
+#store the maximum and minimumm probability i.e, confidence interval, from 8 cases
 wining_p1 = np.zeros([8,2])
 wining_p2 = np.zeros([8,2])
+drawing_p = np.zeros([8,2])
 
+#go through 8 cases: (0.3,0.3), (0.3,0.4), ..., (0.3,1.0)
 for col in range(8):
         # probability threshold for players
-        p1 = 0.3 + col*0.1
+        p1 = 0.3 # manually change the threshold for player 1, 0.3, 0.6, 0.9
         p2 = 0.3 + col*0.1
         #Create a 2x2 matrix players: first column represents players; second column represents probability shresholds
         # 0 means player 1, 1 means player 2
         players = [[0,p1],[1,p2]]
         win_p1 = []
         win_p2 = []
-        # for first type of strategies: mode = 0
+        draw_p = []
+        #for 10 estimates
         for estimate in range(10):
             win_count1 = 0
             win_count2 = 0
-            for i in range(20000): # play 10000 games in each estimate
+            draw_count = 0
+            for i in range(10000): # play 50000 games in each estimate
                 scores = [0,0] #initialize score when a new game starts
                 for j in range(10): # play 10 rounds in each game
                     deck = backup_deck.copy()
@@ -125,17 +126,23 @@ for col in range(8):
                     lose_player = result[0]
                     score = result[1]
                     scores[lose_player] += score
-            #count number of wining for player 1
+            #count number of wining for players
                 if (scores[0] < scores[1]):
                     win_count1 += 1
                 elif (scores[0] > scores[1]):
                     win_count2 += 1
-            win_p1.append(win_count1/20000)
-            win_p2.append(win_count2/20000)
+                else:
+                    draw_count += 1
+            win_p1.append(win_count1/10000)
+            win_p2.append(win_count2/10000)
+            draw_p.append(draw_count/10000)
         wining_p1[col][0] = max(win_p1) #write in maximum p
         wining_p1[col][1] = min(win_p1) #write in minimum p
         wining_p2[col][0] = max(win_p2)
         wining_p2[col][1] = min(win_p2)
+        drawing_p[col][0] = max(draw_p)
+        drawing_p[col][1] = min(draw_p)
 
 print(wining_p1)
 print(wining_p2)
+print(drawing_p)
