@@ -23,8 +23,15 @@ def play(players, id, card, deck, cardsUsed, count, canGiveUp, mode):
         return (0, 0)
     else:
         threshold = players[id][1]
-        p_smaller = (card - 1) / 60.0 #the probability that the next card is smaller than the current card
-        p_larger = 1 - p_smaller
+        if (mode == 1 & id == 0): #player 1 uses the second type of strategies
+            small = 0
+            for l in range(len(cardsUsed)):
+                if (cardsUsed[l] < card):
+                    small += 1
+            p_smaller = (card - 1 - small) / (60.0 - len(cardsUsed)) #the probability that the next card is smaller than the current card
+        else:
+            p_smaller = (card - 1) / 60.0
+        p_larger = 1 - p_smaller #the probability that the next card is larger than the current card
         if ((p_smaller >= threshold) and (p_smaller > p_larger)): # if probability for smaller than >= threhold and p_smaller > p_larger
             new_card = deck.pop(0)
             if (mode == 1):
@@ -99,7 +106,7 @@ drawing_p = np.zeros([8,2])
 #go through 8 cases: (0.3,0.3), (0.3,0.4), ..., (0.3,1.0)
 for col in range(8):
         # probability threshold for players
-        p1 = 0.3 # manually change the threshold for player 1, 0.3, 0.6, 0.9
+        p1 = 0.3 # manually change the threshold for player 1, 0.3, 0.6, 0.9, 1
         p2 = 0.3 + col*0.1
         #Create a 2x2 matrix players: first column represents players; second column represents probability shresholds
         # 0 means player 1, 1 means player 2
